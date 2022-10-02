@@ -1,0 +1,75 @@
+﻿<Window x:Class="Client_Server_Test_Project.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client_Server_Test_Project"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.28*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="0.4*" />
+        </Grid.ColumnDefinitions>
+
+        <Button Grid.Column="0" 
+                Width="130" 
+                Height="50" 
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top" 
+                Content="Добавить"
+                Cursor="Hand">
+        </Button>
+        <Button Grid.Column="0" 
+                Width="130" 
+                Height="50" 
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top" 
+                Margin="0 50 0 0"
+                Content="Редактировать"
+                Cursor="Hand">
+        </Button>
+        <Button Grid.Column="0" 
+                Width="130" 
+                Height="50" 
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top" 
+                Margin="0 100 0 0"
+                Content="Удалить"
+                Cursor="Hand">
+        </Button>
+        <Button Grid.Column="0" 
+                Width="130" 
+                Height="50" 
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top" 
+                Margin="0 150 0 0"
+                Content="Сортировать"
+                Cursor="Hand">
+        </Button>
+
+        <ListBox Grid.Column="1" ItemsSource="{Binding Cards}"
+                 SelectedIndex="0"
+                 SelectedItem="{Binding SelectedCard}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="5">
+                        <TextBlock FontSize="18" Text="{Binding Path=Name}" />
+                        <Image Source="{Binding Path=ImageName}"
+                               Width="300"
+                               Height="300"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>
