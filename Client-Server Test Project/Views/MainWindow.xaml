@@ -25,65 +25,67 @@
             <ColumnDefinition Width="0.4*" />
         </Grid.ColumnDefinitions>
 
-
-        <Button Grid.Column="0" 
-                Width="130" 
-                Height="50" 
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top" 
-                Content="Добавить"
-                Command="{Binding AddCommand}"
-                Cursor="Hand">
-        </Button>
-        <Button Grid.Column="0" 
-                Width="130" 
-                Height="50" 
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top" 
-                Margin="0 50 0 0"
-                Content="Редактировать"
-                Cursor="Hand">
-        </Button>
-        <Button Grid.Column="0" 
-                Width="130" 
-                Height="50" 
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top" 
-                Margin="0 100 0 0"
-                Content="Удалить"
-                Command="{Binding RemoveCommand}"
-                Cursor="Hand">
-        </Button>
-        <Button Grid.Column="0" 
-                Width="130" 
-                Height="50" 
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top" 
-                Margin="0 150 0 0"
-                Content="Сортировать"
-                Cursor="Hand">
-        </Button>
-        <Button Grid.Column="0" 
-                Width="130" 
-                Height="50" 
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top" 
-                Margin="0 200 0 0"
-                Content="Получить все"
-                Cursor="Hand"
-                Command="{Binding GetAllCommand}">
-        </Button>
+        <StackPanel Grid.Column="0">
+            <Button Width="130" 
+                    Height="50" 
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top" 
+                    Content="Добавить"
+                    Command="{Binding AddCommand}"
+                    Cursor="Hand">
+            </Button>
+            <Button Width="130" 
+                    Height="50" 
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top" 
+                    Cursor="Hand"
+                    Command="{Binding AddEmptyCardCommand}">
+                <TextBlock TextAlignment="Center"> Добавить пустую <LineBreak/> карточку</TextBlock>
+            </Button>
+            <Button Width="130" 
+                    Height="50" 
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Content="Редактировать"
+                    Command="{Binding EditCommand}"
+                    Cursor="Hand">
+            </Button>
+            <Button Width="130" 
+                    Height="50" 
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top" 
+                    Content="Удалить"
+                    Command="{Binding RemoveCommand}"
+                    Cursor="Hand">
+            </Button>
+            <Button Width="130" 
+                    Height="50" 
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top" 
+                    Content="Сортировать"
+                    Command="{Binding SortCommand}"
+                    Cursor="Hand">
+            </Button>
+            <Button Width="130" 
+                    Height="50" 
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top" 
+                    Content="Получить все"
+                    Cursor="Hand"
+                    Command="{Binding GetAllCommand}">
+            </Button>
+        </StackPanel>
 
         <ListBox Grid.Column="1" ItemsSource="{Binding Cards}"
-                 SelectedIndex="0"
                  SelectedItem="{Binding SelectedCard}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="5">
                         <TextBlock FontSize="18" Text="{Binding Path=Name}" />
-                        <Image Source="{Binding Path=ImageName}"
-                               Width="300"
-                               Height="300"/>
+                        <Image Source="{Binding Path=MyBitmapImage}"
+                               Width="150"
+                               Height="150"
+                               />
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
@@ -93,8 +95,8 @@
             <TextBlock Text="Выбранный элемент" HorizontalAlignment="Center" />
             <TextBlock Text="Название" />
             <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
-            <Image Source="{Binding ImageName, UpdateSourceTrigger=PropertyChanged}"/>
-            
+            <Image Source="{Binding MyBitmapImage, UpdateSourceTrigger=PropertyChanged}"/>
+
         </StackPanel>
         <Button VerticalAlignment="Bottom" 
                 Grid.Column="2" 

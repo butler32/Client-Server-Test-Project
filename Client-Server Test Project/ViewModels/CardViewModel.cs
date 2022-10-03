@@ -16,9 +16,13 @@ using System.Net.Http.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Client_Server_Test_Project.Services.Interfaces;
-using static System.Net.Mime.MediaTypeNames;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Windows.Markup;
+using System.Windows.Media.Imaging;
+using System.Windows.Controls;
+using static System.Net.Mime.MediaTypeNames;
+using System.Windows;
 
 namespace Client_Server_Test_Project.ViewModels
 {
@@ -30,8 +34,27 @@ namespace Client_Server_Test_Project.ViewModels
         private IDialogService dialogService;
         public ObservableCollection<Card> Cards { get; set; }
 
-        private RelayCommand openCommand;
+        public CardViewModel(IDialogService dialogService)
+        {
+            this.dialogService = dialogService;
+            Cards = new ObservableCollection<Card>
+            {
+                new Card { Id = 0, MyBitmapImage = null, Name = "Пустая карточка"}
+            };
+        }
 
+        public Card SelectedCard
+        {
+            get { return selectedCard; }
+
+            set
+            {
+                selectedCard = value;
+                OnPropertyChanged("SelectedCard");
+            }
+        }
+
+        private RelayCommand openCommand;
         public RelayCommand OpenCommand
         {
             get
@@ -43,7 +66,13 @@ namespace Client_Server_Test_Project.ViewModels
                         {
                             if (dialogService.OpenFileDialog() == true)
                             {
-                                SelectedCard.ImageName = dialogService.FilePath;
+                                if (dialogService.FilePath.Split('.').Last() == "jpg")
+                                {
+                                    SelectedCard.ImageByte = File.ReadAllBytes(dialogService.FilePath);
+                                    SelectedCard.MyBitmapImage = LoadBitmapImage(SelectedCard.ImageByte);
+                                }
+                                else
+                                    MessageBox.Show("Выберите jpg картинку");
                             }
                         }
                         catch (Exception e)
@@ -54,11 +83,73 @@ namespace Client_Server_Test_Project.ViewModels
             }
         }
 
-        
-        
+        private RelayCommand sortCommand;
+        public RelayCommand SortCommand
+        {
+            get
+            {
+                return sortCommand ??
+                    (sortCommand = new RelayCommand(async obj =>
+                    {
+                        if (Cards != null)
+                        {
+                            List<Card> cardsToEdit = new List<Card>();
+                            foreach(Card card in Cards)
+                            {
+                                cardsToEdit.Add(card);
+                            }
+                            cardsToEdit = cardsToEdit.OrderBy(n => n.Name).ToList();
+                            Cards.Clear();
+                            foreach(Card card in cardsToEdit)
+                            {
+                                Cards.Add(card);
+                            }
+                        }
+                    }));
+            }
+        }
+
+        private RelayCommand editCommand;
+        public RelayCommand EditCommand
+        {
+            get
+            {
+                return editCommand ??
+                    (editCommand = new RelayCommand(async obj =>
+                    {
+                        try
+                        {
+                            if (SelectedCard != null && SelectedCard.Name != "" && SelectedCard.ImageByte != null)
+                            {
+                                int[] imageInt = SelectedCard.ImageByte.Select(x => (int)x).ToArray();
+                                CardToImportExport cardToExport = new CardToImportExport();
+                                cardToExport.Id = SelectedCard.Id;
+                                cardToExport.Name = SelectedCard.Name;
+                                cardToExport.Image = imageInt;
+
+                                using (HttpClient client = new HttpClient())
+                                {
+                                    string fullUrl = apiUrl + "Update/";
+                                    client.Timeout = TimeSpan.FromSeconds(900);
+                                    client.DefaultRequestHeaders.Accept.Clear();
+                                    string stringToExport = JsonConvert.SerializeObject(cardToExport);
+                                    var response = client.PutAsJsonAsync(fullUrl, stringToExport);
+                                    response.Wait();
+                                }
+                            }
+                            else
+                                MessageBox.Show("Выберите карточку и заполните её");
+                        }
+                        catch (Exception e)
+                        {
+                            throw;
+                        }
+                    }));
+            }
+        }
+
 
         private RelayCommand addCommand;
-
         public RelayCommand AddCommand
         {
             get
@@ -68,21 +159,25 @@ namespace Client_Server_Test_Project.ViewModels
                     {
                         try
                         {
-                            var imageBytes = File.ReadAllBytes(SelectedCard.ImageName);
-                            int[] imageInt = imageBytes.Select(x => (int)x).ToArray();
-                            CardToImportExport cardToExport = new CardToImportExport();
-                            cardToExport.Name = SelectedCard.Name;
-                            cardToExport.Image = imageInt;
-
-                            using (HttpClient client = new HttpClient())
+                            if (SelectedCard != null && SelectedCard.Name != "" && SelectedCard.ImageByte != null)
                             {
-                                string fullUrl = apiUrl + "Create/";
-                                client.Timeout = TimeSpan.FromSeconds(900);
-                                client.DefaultRequestHeaders.Accept.Clear();
-                                string stringToExport = JsonConvert.SerializeObject(cardToExport);
-                                var response = client.PostAsJsonAsync(fullUrl, stringToExport);
-                                response.Wait();
+                                int[] imageInt = SelectedCard.ImageByte.Select(x => (int)x).ToArray();
+                                CardToImportExport cardToExport = new CardToImportExport();
+                                cardToExport.Name = SelectedCard.Name;
+                                cardToExport.Image = imageInt;
+
+                                using (HttpClient client = new HttpClient())
+                                {
+                                    string fullUrl = apiUrl + "Create/";
+                                    client.Timeout = TimeSpan.FromSeconds(900);
+                                    client.DefaultRequestHeaders.Accept.Clear();
+                                    string stringToExport = JsonConvert.SerializeObject(cardToExport);
+                                    var response = client.PostAsJsonAsync(fullUrl, stringToExport);
+                                    response.Wait();
+                                }
                             }
+                            else
+                                MessageBox.Show("Заполните название и выберите картинку");
                         }
                         catch (Exception e)
                         {
@@ -102,20 +197,38 @@ namespace Client_Server_Test_Project.ViewModels
                     {
                         try
                         {
-                            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                            using (HttpClient client = new HttpClient())
+                            if (SelectedCard.ImageByte != null)
                             {
-                                string fullUrl = $"{apiUrl}Delete?id={SelectedCard.Id}";
-                                client.Timeout = TimeSpan.FromSeconds(900);
-                                client.DefaultRequestHeaders.Accept.Clear();
-                                var response = client.DeleteAsync(fullUrl);
-                                response.Wait();
+                                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                                using (HttpClient client = new HttpClient())
+                                {
+                                    string fullUrl = $"{apiUrl}Delete?id={SelectedCard.Id}";
+                                    client.Timeout = TimeSpan.FromSeconds(900);
+                                    client.DefaultRequestHeaders.Accept.Clear();
+                                    var response = client.DeleteAsync(fullUrl);
+                                    response.Wait();
+                                }
                             }
+                            else
+                                MessageBox.Show("Выберите карточку");
                         }
                         catch (Exception e)
                         {
                             throw;
                         }
+                    }));
+            }
+        }
+
+        private RelayCommand addEmptyCardCommand;
+        public RelayCommand AddEmptyCardCommand
+        {
+            get
+            {
+                return addEmptyCardCommand ??
+                    (addEmptyCardCommand = new RelayCommand(async obj =>
+                    {
+                        Cards.Add(new Card { Id = 0, MyBitmapImage = null, Name = "Пустая карточка"});
                     }));
             }
         }
@@ -133,19 +246,30 @@ namespace Client_Server_Test_Project.ViewModels
                           ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                           using (HttpClient client = new HttpClient())
                           {
+                              string fullUrl = $"{apiUrl}GetAll/";
                               client.Timeout = TimeSpan.FromSeconds(900);
                               client.DefaultRequestHeaders.Accept.Clear();
-                              var response = client.GetAsync("https://localhost:7296/Card/GetAll/");
+                              var response = client.GetAsync(fullUrl);
                               response.Wait();
-                              var a = response.Result.Content.ReadAsStringAsync().Result;
-                              var b = JsonConvert.DeserializeObject<List<Card>>(a);
-                              Cards.Clear();
-                              foreach(var card in b)
+                              if (response.Result.Content != null)
                               {
-                                  Cards.Add(card);
+                                  var importedCards = JsonConvert.DeserializeObject<List<CardToImportExport>>(response.Result.Content.ReadAsStringAsync().Result);
+                                  Cards.Clear();
+                                  if (importedCards != null && importedCards.Count > 0)
+                                  {
+                                      foreach (var card in importedCards)
+                                      {
+                                          Card newCard = new Card();
+                                          newCard.ImageByte = card.Image.Select(i => (byte)i).ToArray();
+                                          newCard.MyBitmapImage = LoadBitmapImage(newCard.ImageByte);
+                                          newCard.Id = card.Id;
+                                          newCard.Name = card.Name;
+                                          Cards.Add(newCard);
+                                      }
+                                  }
                               }
-                              
-
+                              else
+                                  MessageBox.Show("Что-то пошло не так, данные не получены");
                           }
                       }
                       catch (Exception ex)
@@ -156,32 +280,30 @@ namespace Client_Server_Test_Project.ViewModels
             }
         }
 
-        public Card SelectedCard
-        {
-            get { return selectedCard; }
-
-            set 
-            {
-                selectedCard = value;
-                OnPropertyChanged("SelectedCard");
-            }
-        }
-
-        public CardViewModel(IDialogService dialogService)
-        {
-            this.dialogService = dialogService;
-            Cards = new ObservableCollection<Card>
-            {
-                new Card { Name = "Банан", Id = 0, ImageName = "C:\\Users\\plus8\\source\\repos\\Client-Server Test Project\\Server Test Project\\Data\\Images\\banana.jpg" },
-                new Card { Name = "Апельсин", Id = 1, ImageName = "orange"}
-            };
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
+        }
+
+        private static BitmapImage LoadBitmapImage(byte[] imageData)
+        {
+            if (imageData == null || imageData.Length == 0)
+                return null;
+            var image = new BitmapImage();
+            using (var mem = new MemoryStream(imageData))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = mem;
+                image.EndInit();
+            }
+            image.Freeze();
+            return image;
         }
     }
 }

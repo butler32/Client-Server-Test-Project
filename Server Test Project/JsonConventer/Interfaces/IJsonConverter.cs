@@ -9,6 +9,5 @@ namespace Server_Test_Project.JsonConventer.Interfaces
         public IEnumerable<Card> Deserialize();
 
         public List<Card> Serialize(List<Card> cards);
-        public IList<Card> SerializeRewrite(IList<Card> cards);
     }
 }

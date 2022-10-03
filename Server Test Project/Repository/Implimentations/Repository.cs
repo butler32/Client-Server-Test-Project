@@ -8,17 +8,22 @@ namespace Server_Test_Project.Repository.Implimentations
 {
     public class Repository : IRepository
     {
+        private readonly IImageStorage imageStorage;
         private IJsonConverter jsonConverter;
 
-        public Repository(IJsonConverter jsonConverter)
+        public Repository(IJsonConverter jsonConverter, IImageStorage imageStorage)
         {
+            this.imageStorage = imageStorage;
             this.jsonConverter = jsonConverter;
         }
         
         public IEnumerable<Card> GetAll()
         {
             List<Card> cards = jsonConverter.Deserialize().ToList();
-            return cards;
+            if (cards == null || cards.Count == 0)
+                return new List<Card>();
+            else
+                return cards;
         }
 
         public List<Card> Create(List<Card> cards)
@@ -29,17 +34,29 @@ namespace Server_Test_Project.Repository.Implimentations
         public void Delete(int id)
         {
             List<Card> cards = jsonConverter.Deserialize().ToList();
-            cards.Remove(cards.First(i => i.Id == id));
-            jsonConverter.SerializeRewrite(cards);
+            if (cards != null || cards.Count == 0)
+            {
+                var cardToDelete = cards.First(i => i.Id == id);
+                cards.Remove(cards.First(i => i.Id == id));
+                jsonConverter.Serialize(cards);
+                imageStorage.Delete(cardToDelete.ImageName);
+            }
         }
 
-        public Card Update(Card card)
+        public Card Update(Card cardToEdit)
         {
             List<Card> cards = jsonConverter.Deserialize().ToList();
-            int index = cards.IndexOf(card);
-            cards[index] = card;
-            jsonConverter.SerializeRewrite(cards);
-            return card;
+            if (cards != null && cards.Count > 0)
+            {
+                var card = cards.FirstOrDefault(i => i.Id == cardToEdit.Id);
+                if (card == null)
+                    return null;
+                int index = cards.IndexOf(card);
+                cards[index] = cardToEdit;
+                jsonConverter.Serialize(cards);
+                return cardToEdit;
+            }
+            return null;
         }
     }
 }

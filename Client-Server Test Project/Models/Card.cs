@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace Client_Server_Test_Project.Models
 {
@@ -12,7 +14,18 @@ namespace Client_Server_Test_Project.Models
     {
         private int id;
         private string name;
-        private string imageName;
+        private byte[] imageByte;
+        private BitmapImage myBitmapImage;
+
+        public BitmapImage MyBitmapImage
+        {
+            get { return myBitmapImage; }
+            set
+            {
+                myBitmapImage = value;
+                OnPropertyChanged("MyBitmapImage");
+            }
+        }
 
         public int Id
         {
@@ -24,12 +37,12 @@ namespace Client_Server_Test_Project.Models
             }
         }
 
-        public string ImageName
+        public byte[] ImageByte
         {
-            get { return imageName; }
+            get { return imageByte; }
             set
             {
-                imageName = value;
+                imageByte = value;
                 OnPropertyChanged("ImageName");
             }
         }

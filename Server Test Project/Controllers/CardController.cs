@@ -25,43 +25,55 @@ namespace Server_Test_Project.Controllers
         [HttpGet("GetAll")]
         public IEnumerable<CardImportExport> GetAll()
         {
+            var result = cardService.GetAll();
+            if (result == null || result.Count == 0)
+                return null;
             return cardService.GetAll();
         }
 
         [HttpPost("Create")]
         public List<Card> Create ([FromBody]string jsonContent)
         {
-            CardImportExport card = JsonConvert.DeserializeObject<CardImportExport>(jsonContent);
-            return cardService.Create(card);
+            if (jsonContent != null && jsonContent.Length > 0)
+            {
+                CardImportExport card = JsonConvert.DeserializeObject<CardImportExport>(jsonContent);
+                return cardService.Create(card);
+            }
+            else
+                return null;
         }
 
         [HttpPut("Update")]
-        public Card? Update (Card card)
+        public bool Update([FromBody]string jsonContent)
         {
             bool success = true;
-            try
+            CardImportExport card = new CardImportExport();
+            if (jsonContent != null && jsonContent.Length > 0)
+                card = JsonConvert.DeserializeObject<CardImportExport>(jsonContent);
+
+            if (card != null)
             {
-                cardService.Update(card);
+                try
+                {
+                    cardService.Update(card);
+                }
+                catch (Exception)
+                {
+                    success = false;
+                }
+                return success;
             }
-            catch (Exception)
+            else
             {
                 success = false;
+                return success;
             }
-            return success ? card : null;
         }
 
         [HttpDelete("Delete")]
         public void Delete(int id)
         {
-            bool success = true;
-            try
-            {
-                cardService.Delete(id);
-            }
-            catch (Exception)
-            {
-                success = false;
-            }
+            cardService.Delete(id);
         }
     }
 }

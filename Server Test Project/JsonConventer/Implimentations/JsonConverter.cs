@@ -20,12 +20,6 @@ namespace Server_Test_Project.JsonConventer.Implimentations
             return entities;
         }
 
-        public IList<Card> SerializeRewrite(IList<Card> cards)
-        {
-            File.WriteAllText(fileName, JsonConvert.SerializeObject(cards));
-            return cards;
-        }
-
         public List<Card> Serialize(List<Card> cards)
         {
             File.WriteAllText(fileName, JsonConvert.SerializeObject(cards));

@@ -24,15 +24,13 @@ namespace Server_Test_Project.Services.Implimentations
         public List<Card> Create(CardImportExport card)
         {
             List<Card> cards = jsonConverter.Deserialize().ToList();
-            byte[] imageByte = new byte[card.Image.Length];
-            for(int i = 0; i < imageByte.Length; i++)
-            {
-                imageByte[i] = (byte)card.Image[i];
-            }
             Card newCard = new Card();
-            newCard.Id = UniqueId(cards);
+            if (cards.Count > 0)
+                newCard.Id = UniqueId(cards);
+            else
+                newCard.Id = 1;
             newCard.Name = card.Name;
-            newCard.ImageName = imageStorage.Create(new MemoryStream(imageByte));
+            newCard.ImageName = imageStorage.Create(new MemoryStream(card.Image.Select(i => (byte)i).ToArray()));
             cards.Add(newCard);
             return repository.Create(cards);
         }
@@ -46,17 +44,22 @@ namespace Server_Test_Project.Services.Implimentations
         {
             var cardsList = repository.GetAll().ToList();
             List<CardImportExport> cards = new List<CardImportExport>();
-            foreach (Card card in cardsList)
+            if (cardsList != null && cardsList.Count > 0)
             {
+                foreach (Card card in cardsList)
+                {
 
-                CardImportExport cardToExport = new CardImportExport();
-                cardToExport.Id = card.Id;
-                cardToExport.Name = card.Name;
-                var imageBytes = File.ReadAllBytes($"Data\\Images\\{card.ImageName}.jpg");
-                cardToExport.Image = imageBytes.Select(x => (int)x).ToArray();
-                cards.Add(cardToExport);
+                    CardImportExport cardToExport = new CardImportExport();
+                    cardToExport.Id = card.Id;
+                    cardToExport.Name = card.Name;
+                    var imageBytes = File.ReadAllBytes($"Data\\Images\\{card.ImageName}.jpg");
+                    cardToExport.Image = imageBytes.Select(x => (int)x).ToArray();
+                    cards.Add(cardToExport);
+                }
+                return cards;
             }
-            return cards;
+            else
+                return null;
         }
 
         public int UniqueId(List<Card> cards)
@@ -64,10 +67,15 @@ namespace Server_Test_Project.Services.Implimentations
             return cards.Max(x => x.Id) + 1;
         }
 
-        public Card Update(Card card)
+        public Card Update(CardImportExport card)
         {
-            repository.Update(card);
-            return card;
+            Card cardToEdit = new Card();
+            cardToEdit.Id = card.Id;
+            cardToEdit.Name = card.Name;
+            cardToEdit.ImageName = imageStorage.Create(new MemoryStream(card.Image.Select(i => (byte)i).ToArray()));
+
+            repository.Update(cardToEdit);
+            return cardToEdit;
         }
     }
 }
