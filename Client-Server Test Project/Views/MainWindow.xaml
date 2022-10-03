@@ -30,7 +30,7 @@
                     Height="50" 
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" 
-                    Content="Добавить"
+                    Content="Add"
                     Command="{Binding AddCommand}"
                     Cursor="Hand">
             </Button>
@@ -39,14 +39,14 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" 
                     Cursor="Hand"
-                    Command="{Binding AddEmptyCardCommand}">
-                <TextBlock TextAlignment="Center"> Добавить пустую <LineBreak/> карточку</TextBlock>
+                    Command="{Binding AddEmptyCardCommand}"
+                    Content="Add empty card">
             </Button>
             <Button Width="130" 
                     Height="50" 
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    Content="Редактировать"
+                    Content="Edit"
                     Command="{Binding EditCommand}"
                     Cursor="Hand">
             </Button>
@@ -54,7 +54,7 @@
                     Height="50" 
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" 
-                    Content="Удалить"
+                    Content="Delete"
                     Command="{Binding RemoveCommand}"
                     Cursor="Hand">
             </Button>
@@ -62,7 +62,7 @@
                     Height="50" 
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" 
-                    Content="Сортировать"
+                    Content="Sort"
                     Command="{Binding SortCommand}"
                     Cursor="Hand">
             </Button>
@@ -70,7 +70,7 @@
                     Height="50" 
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" 
-                    Content="Получить все"
+                    Content="Get data"
                     Cursor="Hand"
                     Command="{Binding GetAllCommand}">
             </Button>
@@ -92,8 +92,8 @@
         </ListBox>
 
         <StackPanel Grid.Column="2" DataContext="{Binding SelectedCard}">
-            <TextBlock Text="Выбранный элемент" HorizontalAlignment="Center" />
-            <TextBlock Text="Название" />
+            <TextBlock Text="Choosen card" HorizontalAlignment="Center" />
+            <TextBlock Text="Name" />
             <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
             <Image Source="{Binding MyBitmapImage, UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -103,7 +103,7 @@
                 Height="50" 
                 Width="100"
                 Name="ImportImageButton" 
-                Content="Открыть изображение" 
+                Content="Import image" 
                 Command="{Binding OpenCommand}"/>
     </Grid>
 </Window>

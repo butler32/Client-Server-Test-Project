@@ -39,7 +39,7 @@ namespace Client_Server_Test_Project.ViewModels
             this.dialogService = dialogService;
             Cards = new ObservableCollection<Card>
             {
-                new Card { Id = 0, MyBitmapImage = null, Name = "Пустая карточка"}
+                new Card { Id = 0, MyBitmapImage = null, Name = "Empty card"}
             };
         }
 
@@ -72,7 +72,7 @@ namespace Client_Server_Test_Project.ViewModels
                                     SelectedCard.MyBitmapImage = LoadBitmapImage(SelectedCard.ImageByte);
                                 }
                                 else
-                                    MessageBox.Show("Выберите jpg картинку");
+                                    MessageBox.Show("Choose jpg image");
                             }
                         }
                         catch (Exception e)
@@ -138,7 +138,7 @@ namespace Client_Server_Test_Project.ViewModels
                                 }
                             }
                             else
-                                MessageBox.Show("Выберите карточку и заполните её");
+                                MessageBox.Show("Choose card and fill it");
                         }
                         catch (Exception e)
                         {
@@ -177,7 +177,7 @@ namespace Client_Server_Test_Project.ViewModels
                                 }
                             }
                             else
-                                MessageBox.Show("Заполните название и выберите картинку");
+                                MessageBox.Show("Fill name form and choose image");
                         }
                         catch (Exception e)
                         {
@@ -210,7 +210,7 @@ namespace Client_Server_Test_Project.ViewModels
                                 }
                             }
                             else
-                                MessageBox.Show("Выберите карточку");
+                                MessageBox.Show("Choose card");
                         }
                         catch (Exception e)
                         {
@@ -228,7 +228,7 @@ namespace Client_Server_Test_Project.ViewModels
                 return addEmptyCardCommand ??
                     (addEmptyCardCommand = new RelayCommand(async obj =>
                     {
-                        Cards.Add(new Card { Id = 0, MyBitmapImage = null, Name = "Пустая карточка"});
+                        Cards.Add(new Card { Id = 0, MyBitmapImage = null, Name = "Empty card"});
                     }));
             }
         }
@@ -269,7 +269,7 @@ namespace Client_Server_Test_Project.ViewModels
                                   }
                               }
                               else
-                                  MessageBox.Show("Что-то пошло не так, данные не получены");
+                                  MessageBox.Show("Something wrong, can't recive data");
                           }
                       }
                       catch (Exception ex)
