@@ -2,7 +2,7 @@
 {
     public interface IImageStorage
     {
-        string Create(Stream stream, string extension, string folder);
-        void Delete(string name, string extension, string folder);
+        string Create(Stream stream);
+        void Delete(string name);
     }
 }

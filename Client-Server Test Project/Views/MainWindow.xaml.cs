@@ -1,7 +1,10 @@
-﻿using Client_Server_Test_Project.ViewModels;
+﻿using Client_Server_Test_Project.Services.Implimentaions;
+using Client_Server_Test_Project.Services.Interfaces;
+using Client_Server_Test_Project.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,7 +29,7 @@ namespace Client_Server_Test_Project.Views
         {
             InitializeComponent();
 
-            DataContext = new CardViewModel();
+            DataContext = new CardViewModel(new DefaultDialogService());
         }
     }
 }

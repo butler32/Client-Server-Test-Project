@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Server_Test_Project.JsonConventer.Interfaces;
 using Server_Test_Project.Models;
 using Server_Test_Project.Services.Interfaces;
@@ -22,28 +23,15 @@ namespace Server_Test_Project.Controllers
         }
 
         [HttpGet("GetAll")]
-        public IEnumerable<Card> GetAll()
+        public IEnumerable<CardImportExport> GetAll()
         {
             return cardService.GetAll();
         }
 
-        [HttpGet("GetById")]
-        public Card GetById(int Id)
-        {
-            return cardService.GetById(Id);
-        }
-
-        [HttpGet("GetByName")]
-        public Card GetByName(string name)
-        {
-            return cardService.GetByName(name);
-        }
-
-        
         [HttpPost("Create")]
-        public Card Create (string jsonContent)
+        public List<Card> Create ([FromBody]string jsonContent)
         {
-            Card card = jsonConverter.Des(jsonContent);
+            CardImportExport card = JsonConvert.DeserializeObject<CardImportExport>(jsonContent);
             return cardService.Create(card);
         }
 
@@ -63,18 +51,17 @@ namespace Server_Test_Project.Controllers
         }
 
         [HttpDelete("Delete")]
-        public Card? Delete(Card card)
+        public void Delete(int id)
         {
             bool success = true;
             try
             {
-                cardService.Delete(card);
+                cardService.Delete(id);
             }
             catch (Exception)
             {
                 success = false;
             }
-            return success ? card : null;
         }
     }
 }

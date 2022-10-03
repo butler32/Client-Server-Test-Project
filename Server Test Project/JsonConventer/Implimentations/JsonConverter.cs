@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using Server_Test_Project.JsonConventer.Interfaces;
 using Server_Test_Project.Models;
+using Server_Test_Project.Services.Implimentations;
+using Server_Test_Project.Services.Interfaces;
 using System.Text.Json.Nodes;
 
 namespace Server_Test_Project.JsonConventer.Implimentations
@@ -9,7 +11,7 @@ namespace Server_Test_Project.JsonConventer.Implimentations
     public class JsonConverter : IJsonConverter
     {
         private string fileName = Path.Combine("Data", "Json", "Cards.json");
-        
+
 
         public IEnumerable<Card> Deserialize()
         {
@@ -18,23 +20,16 @@ namespace Server_Test_Project.JsonConventer.Implimentations
             return entities;
         }
 
-        public Card? Des(string jsonContent)
-        {
-            return JsonConvert.DeserializeObject<Card>(jsonContent);
-        }
-
         public IList<Card> SerializeRewrite(IList<Card> cards)
         {
             File.WriteAllText(fileName, JsonConvert.SerializeObject(cards));
             return cards;
         }
 
-        public Card Serialize(Card card)
+        public List<Card> Serialize(List<Card> cards)
         {
-            List<Card> cards = Deserialize().ToList();
-            cards.Add(card);
             File.WriteAllText(fileName, JsonConvert.SerializeObject(cards));
-            return card;
+            return cards;
         }
     }
 }

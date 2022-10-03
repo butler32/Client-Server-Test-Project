@@ -1,6 +1,8 @@
-﻿using Server_Test_Project.JsonConventer.Interfaces;
+﻿using Server_Test_Project.FIleStorage.Interfaces;
+using Server_Test_Project.JsonConventer.Interfaces;
 using Server_Test_Project.Models;
 using Server_Test_Project.Repository.Interfaces;
+using Server_Test_Project.Services.Interfaces;
 
 namespace Server_Test_Project.Repository.Implimentations
 {
@@ -19,27 +21,15 @@ namespace Server_Test_Project.Repository.Implimentations
             return cards;
         }
 
-        public Card GetById(int id)
+        public List<Card> Create(List<Card> cards)
         {
-            Card card = jsonConverter.Deserialize().ToList().FirstOrDefault(i => i.Id == id);
-            return card;
+            return jsonConverter.Serialize(cards);
         }
 
-        public Card GetByName(string name)
-        {
-            Card card = jsonConverter.Deserialize().ToList().FirstOrDefault(n => n.Name == name);
-            return card;
-        }
-
-        public Card Create(Card card)
-        {
-            return jsonConverter.Serialize(card);
-        }
-
-        public void Delete(Card card)
+        public void Delete(int id)
         {
             List<Card> cards = jsonConverter.Deserialize().ToList();
-            bool succes = cards.Remove(card);
+            cards.Remove(cards.First(i => i.Id == id));
             jsonConverter.SerializeRewrite(cards);
         }
 

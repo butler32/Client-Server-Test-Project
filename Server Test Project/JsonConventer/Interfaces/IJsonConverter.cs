@@ -8,8 +8,7 @@ namespace Server_Test_Project.JsonConventer.Interfaces
     {
         public IEnumerable<Card> Deserialize();
 
-        public Card Serialize(Card card);
+        public List<Card> Serialize(List<Card> cards);
         public IList<Card> SerializeRewrite(IList<Card> cards);
-        public Card Des(string jsonContent);
     }
 }
